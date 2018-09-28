@@ -26,12 +26,28 @@ class App extends Component {
         });
   }
 
-  handleFlights() {
-
+  handleFlights(searchParams) {
+    this.setState({isLoading: true});
+      searchFlights(searchParams)
+        .then(airport => {
+          this.setState({
+              isLoading: false,
+              searchParams,
+              data: airport
+          })
+        });
   }
 
   handleReset() {
-    
+    this.setState({
+      params: {
+        from: null,
+        to: null,
+        departureDate: null,
+        returnDate: null
+      },
+      data: null
+    })
   }
 
   render() {
@@ -42,14 +58,20 @@ class App extends Component {
           </div>
           {this.state.isLoading && (<span>Loading...</span>)}
           {this.state.isLoading === false &&  this.state.data === false && (
-            <SearchForm />
+            <SearchForm 
+              airports={this.state.data}
+              params={this.state.params}
+              Submit={this.handleFlights}
+              reset={this.handleReset}
+            />
           )}
           {this.state.isLoading === false && this.state.data && (
-            <div>a</div>
+            <FlightList 
+              airports={this.state.data}
+              reset={this.handleReset}
+            />
           )}
-          {this.state.data.map((e,i) => {
-            return <div key={i}>{e.city}</div>
-          })}
+          <SearchForm />
       </div>
     );
   }         
